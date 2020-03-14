@@ -14,16 +14,17 @@ public class MovimentoCaixaDAO
 {
     public static int insert(MovimentoCaixa c)
     {
-        String sql = "insert into movimento_caixa(cxa_saldo_inicial,cxa_saldo_final,cxa_status) values(?,?,?) returning id;";
+        String sql = "insert into movimento_caixa(cxa_id,mc_valor,mc_tipo,act_id) values(?,?,?,?) returning id;";
         try (Connection conn = Conexao.open())
         {
             if (conn != null)
             {
                 try (PreparedStatement ps = conn.prepareStatement(sql))
                 {
-                    ps.setDouble(1, c.getSaldoInicial());
-                    ps.setDouble(2, c.getSaldoFinal());
-                    ps.setBoolean(3, c.isStatus());
+                    ps.setInt(1, c.getCaixa().getId());
+                    ps.setDouble(2, c.getValor());
+                    ps.setInt(3, c.getTipo());
+                    ps.setInt(4, c.getAcerto().getId());
                     
                     try(ResultSet rs = ps.executeQuery())
                     {
@@ -47,17 +48,18 @@ public class MovimentoCaixaDAO
     
     public static int update(MovimentoCaixa c)
     {
-        String sql = "update movimento_caixa set cxa_saldo_inicial = ?, cxa_saldo_final = ?, cxa_status = ? where cxa_id = ?;";
+        String sql = "update movimento_caixa set cxa_id = ?, mc_valor = ?, mc_tipo = ?, act_id = ? where mc_id = ?;";
         try (Connection conn = Conexao.open())
         {
             if (conn != null)
             {
                 try (PreparedStatement ps = conn.prepareStatement(sql))
                 {
-                    ps.setDouble(1, c.getSaldoInicial());
-                    ps.setDouble(2, c.getSaldoFinal());
-                    ps.setBoolean(3, c.isStatus());
-                    ps.setInt(4, c.getId());
+                    ps.setInt(1, c.getCaixa().getId());
+                    ps.setDouble(2, c.getValor());
+                    ps.setInt(3, c.getTipo());
+                    ps.setInt(4, c.getAcerto().getId());
+                    ps.setInt(5, c.getId());
                     
                     return ps.executeUpdate();
                 }
@@ -73,7 +75,7 @@ public class MovimentoCaixaDAO
     
     public static int delete(int id)
     {
-        String sql = "delete from movimento_caixa where cxa_id = ?;";
+        String sql = "delete from movimento_caixa where mc_id = ?;";
         try (Connection conn = Conexao.open())
         {
             if (conn != null)
@@ -96,7 +98,7 @@ public class MovimentoCaixaDAO
     
     public static MovimentoCaixa getById(int id)
     {
-        String sql = "select * from movimento_caixa where cxa_id = ?;";
+        String sql = "select * from movimento_caixa where mc_id = ?;";
         try (Connection conn = Conexao.open())
         {
             if (conn != null)
@@ -109,10 +111,11 @@ public class MovimentoCaixaDAO
                     {
                         return rs.next() 
                             ? new MovimentoCaixa(
-                                rs.getInt("cxa_id"),
-                                rs.getBoolean("cxa_status"),
-                                rs.getDouble("cxa_saldo_inicial"),
-                                rs.getDouble("cxa_saldo_final")                                
+                                rs.getInt("mc_id"),
+                                rs.getDouble("mc_valor"),
+                                rs.getInt("mc_tipo"),
+                                CaixaDAO.getById(rs.getInt("cxa_id")),
+                                AcertoDAO.getById(rs.getInt("act_id"))
                             )
                             : null;
                     }
@@ -143,10 +146,11 @@ public class MovimentoCaixaDAO
                         {
                             list.add(
                                 new MovimentoCaixa(
-                                    rs.getInt("cxa_id"),
-                                    rs.getBoolean("cxa_status"),
-                                    rs.getDouble("cxa_saldo_inicial"),
-                                    rs.getDouble("cxa_saldo_final")
+                                    rs.getInt("mc_id"),
+                                    rs.getDouble("mc_valor"),
+                                    rs.getInt("mc_tipo"),
+                                    CaixaDAO.getById(rs.getInt("cxa_id")),
+                                    AcertoDAO.getById(rs.getInt("act_id"))
                                 )
                             );
                         }
