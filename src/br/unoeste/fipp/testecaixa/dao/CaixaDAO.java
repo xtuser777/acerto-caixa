@@ -1,6 +1,7 @@
 package br.unoeste.fipp.testecaixa.dao;
 
 import br.unoeste.fipp.testecaixa.model.Caixa;
+import br.unoeste.fipp.testecaixa.util.Banco;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,8 +15,10 @@ public class CaixaDAO
 {
     public static int insert(Caixa c)
     {
+        int result = -10;
         String sql = "insert into caixa(cxa_saldo_inicial,cxa_saldo_final,cxa_status) values(?,?,?) returning id;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -29,10 +32,8 @@ public class CaixaDAO
                     {
                         if (rs.next())
                         {
-                            return rs.getInt("id");
+                            result = rs.getInt("id");
                         }
-                        
-                        return -10;
                     }
                 }
             }
@@ -42,13 +43,15 @@ public class CaixaDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return -10;
+        return result;
     }
     
     public static int update(Caixa c)
     {
+        int result = -10;
         String sql = "update caixa set cxa_saldo_inicial = ?, cxa_saldo_final = ?, cxa_status = ? where cxa_id = ?;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -59,7 +62,7 @@ public class CaixaDAO
                     ps.setBoolean(3, c.isStatus());
                     ps.setInt(4, c.getId());
                     
-                    return ps.executeUpdate();
+                    result = ps.executeUpdate();
                 }
             }
         } 
@@ -68,13 +71,15 @@ public class CaixaDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return -10;
+        return result;
     }
     
     public static int delete(int id)
     {
+        int result = -10;
         String sql = "delete from caixa where cxa_id = ?;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -82,7 +87,7 @@ public class CaixaDAO
                 {
                     ps.setInt(1, id);
                     
-                    return ps.executeUpdate();
+                    result = ps.executeUpdate();
                 }
             }
         } 
@@ -91,13 +96,15 @@ public class CaixaDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return -10;
+        return result;
     }
     
     public static Caixa getById(int id)
     {
+        Caixa c = null;
         String sql = "select * from caixa where cxa_id = ?;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -107,14 +114,17 @@ public class CaixaDAO
                     
                     try(ResultSet rs = ps.executeQuery())
                     {
-                        return rs.next() 
-                            ? new Caixa(
+                        if (rs.next())
+                        {
+                            c = new Caixa(
                                 rs.getInt("cxa_id"),
                                 rs.getBoolean("cxa_status"),
                                 rs.getDouble("cxa_saldo_inicial"),
                                 rs.getDouble("cxa_saldo_final")                                
-                            )
-                            : null;
+                            );
+                            
+                            conn.close();
+                        }
                     }
                 }
             }
@@ -124,13 +134,15 @@ public class CaixaDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return null;
+        return c;
     }
     
     public static List<Caixa> getAll()
     {
+        List<Caixa> caixas = null;
         String sql = "select * from caixa;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -138,10 +150,10 @@ public class CaixaDAO
                 {
                     try(ResultSet rs = ps.executeQuery())
                     {
-                        List<Caixa> list = new ArrayList<>();
+                        caixas = new ArrayList<>();
                         while (rs.next())
                         {
-                            list.add(
+                            caixas.add(
                                 new Caixa(
                                     rs.getInt("cxa_id"),
                                     rs.getBoolean("cxa_status"),
@@ -151,7 +163,7 @@ public class CaixaDAO
                             );
                         }
                         
-                        return list;
+                        conn.close();
                     }
                 }
             }
@@ -161,6 +173,6 @@ public class CaixaDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return null;
+        return caixas;
     }
 }

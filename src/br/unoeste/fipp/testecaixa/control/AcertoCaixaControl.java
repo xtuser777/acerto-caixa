@@ -6,7 +6,7 @@ import java.sql.Connection;
 
 public class AcertoCaixaControl 
 {
-    public String confirmar(int tipo, double valor, String motivo, int caixaId){
+    /*public String confirmar(int tipo, double valor, String motivo, int caixaId){
         String erro = "";
         Caixa caixa = Caixa.getById(caixaId);
         
@@ -19,5 +19,5 @@ public class AcertoCaixaControl
         else
             return "Caixa fechado.";
         return erro;
-    }
+    }*/
 }

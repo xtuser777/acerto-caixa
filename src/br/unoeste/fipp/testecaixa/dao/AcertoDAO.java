@@ -1,6 +1,7 @@
 package br.unoeste.fipp.testecaixa.dao;
 
 import br.unoeste.fipp.testecaixa.model.*;
+import br.unoeste.fipp.testecaixa.util.Banco;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,8 +18,10 @@ public class AcertoDAO
 {
     public static int insert(Acerto a)
     {
+        int result = -10;
         String sql = "insert into acerto(act_data,act_valor,act_tipo,act_motivo) values(?,?,?,?) returning id;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -33,10 +36,8 @@ public class AcertoDAO
                     {
                         if (rs.next())
                         {
-                            return rs.getInt("id");
+                            result = rs.getInt("id");
                         }
-                        
-                        return -10;
                     }
                 }
             }
@@ -46,13 +47,15 @@ public class AcertoDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return -10;
+        return result;
     }
     
     public static int update(Acerto a)
     {
+        int result = -10;
         String sql = "update acerto set act_data = ?,act_valor = ?,act_tipo = ?,act_motivo = ? where act_id = ?;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -64,7 +67,7 @@ public class AcertoDAO
                     ps.setString(4, a.getMotivo());
                     ps.setInt(5, a.getId());
                     
-                    return ps.executeUpdate();
+                    result = ps.executeUpdate();
                 }
             }
         } 
@@ -73,13 +76,15 @@ public class AcertoDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return -10;
+        return result;
     }
     
     public static int delete(int id)
     {
+        int result = -10;
         String sql = "delete from acerto where act_id = ?;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -87,7 +92,7 @@ public class AcertoDAO
                 {
                     ps.setInt(1, id);
                     
-                    return ps.executeUpdate();
+                    result = ps.executeUpdate();
                 }
             }
         } 
@@ -96,13 +101,15 @@ public class AcertoDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return -10;
+        return result;
     }
     
     public static Acerto getById(int id)
     {
+        Acerto a = null;
         String sql = "select * from acerto where act_id = ?;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -112,15 +119,18 @@ public class AcertoDAO
                     
                     try(ResultSet rs = ps.executeQuery())
                     {
-                        return rs.next() 
-                            ? new Acerto(
+                        if (rs.next())
+                        {
+                            a = new Acerto(
                                 rs.getInt("act_id"),
                                 rs.getTimestamp("act_data").toLocalDateTime().toLocalDate(),
                                 rs.getDouble("act_valor"),
                                 rs.getInt("act_tipo"),
                                 rs.getString("act_motivo")
-                            )
-                            : null;
+                            );
+                        }
+                        
+                        conn.close();
                     }
                 }
             }
@@ -130,13 +140,15 @@ public class AcertoDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return null;
+        return a;
     }
     
     public static List<Acerto> getAll()
     {
+        List<Acerto> acertos = null;
         String sql = "select * from acerto;";
-        try (Connection conn = Conexao.open())
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
         {
             if (conn != null)
             {
@@ -144,10 +156,10 @@ public class AcertoDAO
                 {
                     try(ResultSet rs = ps.executeQuery())
                     {
-                        List<Acerto> list = new ArrayList<>();
+                        acertos = new ArrayList<>();
                         while (rs.next())
                         {
-                            list.add(
+                            acertos.add(
                                 new Acerto(
                                     rs.getInt("act_id"),
                                     rs.getTimestamp("act_data").toLocalDateTime().toLocalDate(),
@@ -158,7 +170,7 @@ public class AcertoDAO
                             );
                         }
                         
-                        return list;
+                        conn.close();
                     }
                 }
             }
@@ -168,6 +180,6 @@ public class AcertoDAO
             Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return null;
+        return acertos;
     }
 }
