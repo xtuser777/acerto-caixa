@@ -19,7 +19,7 @@ public class AcertoDAO
     public static int insert(Acerto a)
     {
         int result = -10;
-        String sql = "insert into acerto(act_data,act_valor,act_tipo,act_motivo) values(?,?,?,?) returning id;";
+        String sql = "insert into acerto(act_data,act_valor,act_tipo,act_motivo) values(?,?,?,?) returning act_id;";
         Banco db = Banco.getInstance();
         try (Connection conn = db.getConnection())
         {
@@ -36,7 +36,7 @@ public class AcertoDAO
                     {
                         if (rs.next())
                         {
-                            result = rs.getInt("id");
+                            result = rs.getInt("act_id");
                         }
                     }
                 }

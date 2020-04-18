@@ -16,7 +16,7 @@ public class MovimentoCaixaDAO
     public static int insert(MovimentoCaixa c)
     {
         int result = -10;
-        String sql = "insert into movimento_caixa(cxa_id,mc_valor,mc_tipo,act_id) values(?,?,?,?) returning id;";
+        String sql = "insert into movimento_caixa(cxa_id,mc_valor,mc_tipo,act_id) values(?,?,?,?) returning mc_id;";
         Banco db = Banco.getInstance();
         try (Connection conn = db.getConnection())
         {
@@ -33,7 +33,7 @@ public class MovimentoCaixaDAO
                     {
                         if (rs.next())
                         {
-                            result = rs.getInt("id");
+                            result = rs.getInt("mc_id");
                         }
                     }
                 }
