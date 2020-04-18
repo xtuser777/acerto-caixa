@@ -99,6 +99,56 @@ public class CaixaDAO
         return result;
     }
     
+    public static int abre(int id)
+    {
+        int result = -10;
+        String sql = "update caixa set cxa_status = true where cxa_id = ?;";
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
+        {
+            if (conn != null)
+            {
+                try (PreparedStatement ps = conn.prepareStatement(sql))
+                {
+                    ps.setInt(1, id);
+                    
+                    result = ps.executeUpdate();
+                }
+            }
+        } 
+        catch (SQLException ex) 
+        {
+            Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
+    public static int fechar(int id)
+    {
+        int result = -10;
+        String sql = "update caixa set cxa_status = false where cxa_id = ?;";
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
+        {
+            if (conn != null)
+            {
+                try (PreparedStatement ps = conn.prepareStatement(sql))
+                {
+                    ps.setInt(1, id);
+                    
+                    result = ps.executeUpdate();
+                }
+            }
+        } 
+        catch (SQLException ex) 
+        {
+            Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
     public static Caixa getById(int id)
     {
         Caixa c = null;

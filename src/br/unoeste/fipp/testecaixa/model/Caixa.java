@@ -1,5 +1,7 @@
 package br.unoeste.fipp.testecaixa.model;
 
+import br.unoeste.fipp.testecaixa.dao.CaixaDAO;
+
 public class Caixa
 {
     private int id;
@@ -24,6 +26,11 @@ public class Caixa
     {
         return status;
     }
+    
+    public void setStatus(boolean status)
+    {
+        this.status = status;
+    }
 
     public double getSaldoInicial()
     {
@@ -33,5 +40,20 @@ public class Caixa
     public double getSaldoFinal() 
     {
         return saldoFinal;
+    }
+    
+    public int abre()
+    {
+        return this.id > 0 ? CaixaDAO.abre(this.id) : -5;
+    }
+    
+    public int fechar()
+    {
+        return this.id > 0 ? CaixaDAO.fechar(this.id) : -5;
+    }
+    
+    public static Caixa getById(int id)
+    {
+        return id > 0 ? CaixaDAO.getById(id) : null;
     }
 }
