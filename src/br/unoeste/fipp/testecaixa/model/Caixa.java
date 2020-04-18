@@ -52,6 +52,16 @@ public class Caixa
         return this.id > 0 ? CaixaDAO.fechar(this.id) : -5;
     }
     
+    public int atualizarSaldo(double valor)
+    {
+        if (valor <= 0 || !status) return -5;
+        
+        this.saldoInicial = this.saldoFinal;
+        this.saldoFinal = valor;
+        
+        return CaixaDAO.atualizarSaldo(this.id, this.saldoInicial, this.saldoFinal);
+    }
+    
     public static Caixa getById(int id)
     {
         return id > 0 ? CaixaDAO.getById(id) : null;

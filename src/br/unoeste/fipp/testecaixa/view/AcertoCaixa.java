@@ -2,11 +2,16 @@ package br.unoeste.fipp.testecaixa.view;
 
 import br.unoeste.fipp.testecaixa.control.AcertoCaixaControl;
 import br.unoeste.fipp.testecaixa.model.Caixa;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -14,7 +19,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javax.swing.JOptionPane;
 
 public class AcertoCaixa extends Application
 {    
@@ -81,7 +85,7 @@ public class AcertoCaixa extends Application
         btConfirmar.setLayoutX(10);
         btConfirmar.setLayoutY(180);
         btConfirmar.setPrefWidth(280);
-        btConfirmar.setOnAction((ActionEvent event) -> { confirmar(rbDec, txValor, txMotivo); });
+        btConfirmar.setOnAction((ActionEvent event) -> { confirmar(rbDec, txValor, txMotivo, primaryStage); });
         
         AnchorPane root = new AnchorPane();
         root.getChildren().add(lbData);
@@ -102,23 +106,31 @@ public class AcertoCaixa extends Application
         primaryStage.show();
     }
     
-    private void confirmar(RadioButton rbDec, TextField txValor, TextField txMotivo)
+    private void confirmar(RadioButton rbDec, TextField txValor, TextField txMotivo, Stage primaryStage)
     {
-        int tipo = rbDec.isSelected() ? 1 : 2;
-        String svalor = txValor.getText();
-        String motivo = txMotivo.getText();
-        
-        double valor = Double.parseDouble(svalor);
-        
-        String mensagem = new AcertoCaixaControl().confirmar(tipo, valor, motivo, this.caixa.getId());
-        
-        if (mensagem.length() > 0) 
-        {
+        try {
+            int tipo = rbDec.isSelected() ? 1 : 2;
+            String svalor = txValor.getText();
+            String motivo = txMotivo.getText();
             
-        }
-        else
-        {
+            double valor = Double.parseDouble(svalor);
             
+            String mensagem = new AcertoCaixaControl().confirmar(tipo, valor, motivo, this.caixa.getId());
+            
+            if (mensagem.length() > 0)
+            {
+                new Alert(Alert.AlertType.ERROR, mensagem, ButtonType.CLOSE).show();
+            }
+            else
+            {
+                rbDec.setSelected(true);
+                txValor.setText("");
+                txMotivo.setText("");
+                
+                new Inicio().start(primaryStage);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AcertoCaixa.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

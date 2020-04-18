@@ -99,6 +99,33 @@ public class CaixaDAO
         return result;
     }
     
+    public static int atualizarSaldo(int id, double inicial, double finaL)
+    {
+        int result = -10;
+        String sql = "update caixa set cxa_saldo_inicial = ? cxa_saldo_final = ? where cxa_id = ?;";
+        Banco db = Banco.getInstance();
+        try (Connection conn = db.getConnection())
+        {
+            if (conn != null)
+            {
+                try (PreparedStatement ps = conn.prepareStatement(sql))
+                {
+                    ps.setDouble(1, inicial);
+                    ps.setDouble(2, finaL);
+                    ps.setInt(3, id);
+                    
+                    result = ps.executeUpdate();
+                }
+            }
+        } 
+        catch (SQLException ex) 
+        {
+            Logger.getLogger(CaixaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
     public static int abre(int id)
     {
         int result = -10;

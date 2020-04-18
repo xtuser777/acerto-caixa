@@ -1,5 +1,7 @@
 package br.unoeste.fipp.testecaixa.model;
 
+import br.unoeste.fipp.testecaixa.dao.MovimentoCaixaDAO;
+
 public class MovimentoCaixa 
 {
     private int id;
@@ -40,5 +42,16 @@ public class MovimentoCaixa
     public Acerto getAcerto()
     {
         return acerto;
+    }
+    
+    public int salvar()
+    {
+        if (this.id != 0 || this.tipo == 0 || this.valor <= 0 || this.acerto == null || this.caixa == null) return -5;
+        
+        int resultado = MovimentoCaixaDAO.insert(this);
+        
+        this.id = resultado;
+        
+        return resultado;
     }
 }
