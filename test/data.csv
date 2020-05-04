@@ -1,0 +1,8 @@
+valor,caixa,status,result
+0,1,true,1
+0.01,1,true,1
+10,1,true,1
+-0.99,1,true,-5
+-10,1,true,-5
+0.001,1,true,-4
+10,1,false,-5

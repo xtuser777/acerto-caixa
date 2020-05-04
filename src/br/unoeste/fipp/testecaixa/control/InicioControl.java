@@ -1,6 +1,7 @@
 package br.unoeste.fipp.testecaixa.control;
 
 import br.unoeste.fipp.testecaixa.model.Caixa;
+import br.unoeste.fipp.testecaixa.util.Banco;
 
 /**
  *
@@ -11,7 +12,7 @@ public class InicioControl
     public Caixa obterCaixa(int id)
     {
         Caixa c = null;
-        c = Caixa.getById(id);
+        c = Caixa.getById(Banco.getInstance().getConnection(), id);
         
         return c;
     }
@@ -20,7 +21,7 @@ public class InicioControl
     {
         if (c == null || c.getId() == 0) return "Erro interno do sistema.";
         
-        int res = c.abre();
+        int res = c.abre(Banco.getInstance().getConnection());
         
         switch (res)
         {
@@ -37,7 +38,7 @@ public class InicioControl
     {
         if (c == null || c.getId() == 0) return "Erro interno do sistema.";
         
-        int res = c.fechar();
+        int res = c.fechar(Banco.getInstance().getConnection());
         
         switch (res)
         {

@@ -1,6 +1,7 @@
 package br.unoeste.fipp.testecaixa.model;
 
 import br.unoeste.fipp.testecaixa.dao.MovimentoCaixaDAO;
+import java.sql.Connection;
 
 public class MovimentoCaixa 
 {
@@ -44,11 +45,11 @@ public class MovimentoCaixa
         return acerto;
     }
     
-    public int salvar()
+    public int salvar(Connection conn)
     {
         if (this.id != 0 || this.tipo == 0 || this.valor <= 0 || this.acerto == null || this.caixa == null) return -5;
         
-        int resultado = MovimentoCaixaDAO.insert(this);
+        int resultado = MovimentoCaixaDAO.insert(conn, this);
         
         this.id = resultado;
         

@@ -108,7 +108,6 @@ public class AcertoCaixa extends Application
     
     private void confirmar(RadioButton rbDec, TextField txValor, TextField txMotivo, Stage primaryStage)
     {
-        try {
             int tipo = rbDec.isSelected() ? 1 : 2;
             String svalor = txValor.getText();
             String motivo = txMotivo.getText();
@@ -129,8 +128,5 @@ public class AcertoCaixa extends Application
                 
                 new Inicio().start(primaryStage);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(AcertoCaixa.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 }

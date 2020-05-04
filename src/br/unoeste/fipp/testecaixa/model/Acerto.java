@@ -1,6 +1,7 @@
 package br.unoeste.fipp.testecaixa.model;
 
 import br.unoeste.fipp.testecaixa.dao.AcertoDAO;
+import java.sql.Connection;
 import java.time.LocalDate;
 
 public class Acerto 
@@ -45,11 +46,11 @@ public class Acerto
         return motivo;
     }
     
-    public int salvar()
+    public int salvar(Connection conn)
     {
         if (this.id != 0 || this.data == null || this.tipo == 0 || this.valor <= 0 || this.motivo == null || this.motivo.isEmpty()) return -5;
         
-        int resultado = AcertoDAO.insert(this);
+        int resultado = AcertoDAO.insert(conn, this);
         
         this.id = resultado;
         

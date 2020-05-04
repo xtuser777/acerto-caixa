@@ -1,6 +1,7 @@
 package br.unoeste.fipp.testecaixa.model;
 
 import br.unoeste.fipp.testecaixa.dao.CaixaDAO;
+import java.sql.Connection;
 
 public class Caixa
 {
@@ -42,28 +43,32 @@ public class Caixa
         return saldoFinal;
     }
     
-    public int abre()
+    public int abre(Connection conn)
     {
-        return this.id > 0 ? CaixaDAO.abre(this.id) : -5;
+        this.status = true;
+        return this.id > 0 ? CaixaDAO.abre(conn, this.id) : -5;
     }
     
-    public int fechar()
+    public int fechar(Connection conn)
     {
-        return this.id > 0 ? CaixaDAO.fechar(this.id) : -5;
+        this.status = false;
+        return this.id > 0 ? CaixaDAO.fechar(conn, this.id) : -5;
     }
     
-    public int atualizarSaldo(double valor)
+    public int atualizarSaldo(Connection conn, Double valor)
     {
-        if (valor <= 0 || !status) return -5;
+        if (valor == null || valor < 0 || !status) return -5;
+        
+        if(valor.intValue() != valor && valor.toString().replace(".","#").split("#")[1].length() > 2) return -4;
         
         this.saldoInicial = this.saldoFinal;
         this.saldoFinal = valor;
         
-        return CaixaDAO.atualizarSaldo(this.id, this.saldoInicial, this.saldoFinal);
+        return CaixaDAO.atualizarSaldo(conn, this.id, this.saldoInicial, this.saldoFinal);
     }
     
-    public static Caixa getById(int id)
+    public static Caixa getById(Connection conn, int id)
     {
-        return id > 0 ? CaixaDAO.getById(id) : null;
+        return id > 0 ? CaixaDAO.getById(conn, id) : null;
     }
 }
