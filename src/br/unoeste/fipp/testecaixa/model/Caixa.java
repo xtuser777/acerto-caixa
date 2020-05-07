@@ -55,6 +55,30 @@ public class Caixa
         return this.id > 0 ? CaixaDAO.fechar(conn, this.id) : -5;
     }
     
+    public int decrementar(Connection conn, Double valor)
+    {
+        if (valor == null || valor < 0 || valor > this.saldoFinal || !status) return -5;
+        
+        if(valor.intValue() != valor && valor.toString().replace(".","#").split("#")[1].length() > 2) return -4;
+        
+        this.saldoInicial = this.saldoFinal;
+        this.saldoFinal = this.saldoFinal - valor;
+        
+        return CaixaDAO.atualizarSaldo(conn, this.id, this.saldoInicial, this.saldoFinal);
+    }
+    
+    public int incrementar(Connection conn, Double valor)
+    {
+        if (valor == null || valor < 0 || !status) return -5;
+        
+        if(valor.intValue() != valor && valor.toString().replace(".","#").split("#")[1].length() > 2) return -4;
+        
+        this.saldoInicial = this.saldoFinal;
+        this.saldoFinal = this.saldoFinal + valor;
+        
+        return CaixaDAO.atualizarSaldo(conn, this.id, this.saldoInicial, this.saldoFinal);
+    }
+    
     public int atualizarSaldo(Connection conn, Double valor)
     {
         if (valor == null || valor < 0 || !status) return -5;

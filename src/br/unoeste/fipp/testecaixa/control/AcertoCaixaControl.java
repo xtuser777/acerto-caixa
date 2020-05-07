@@ -46,27 +46,46 @@ public class AcertoCaixaControl
             {
                 conn.rollback();
                 conn.close();
-                return "";
+                return "Problema ao executar o comando SQL de inserção do movimento.";
             }
             if (rmc == -5)
             {
                 conn.rollback();
                 conn.close();
-                return "";
+                return "Parâmetros inválidos.";
             }
 
-            int rc = caixa.atualizarSaldo(conn, valor);
-            if (rmc == -10 || rmc == -1) 
+            int rc = 0;
+            if (tipo == 1) {
+                rc = caixa.decrementar(conn, valor);
+                if (rc == -10 || rc == -1) 
+                {
+                    conn.rollback();
+                    conn.close();
+                    return "Problema ao executar o comando SQL de decremento do caixa.";
+                }
+                if (rc == -5)
+                {
+                    conn.rollback();
+                    conn.close();
+                    return "Parâmetros inválidos.";
+                }
+            } 
+            else
             {
-                conn.rollback();
-                conn.close();
-                return "";
-            }
-            if (rmc == -5)
-            {
-                conn.rollback();
-                conn.close();
-                return "";
+                rc = caixa.incrementar(conn, valor);
+                if (rc == -10 || rc == -1) 
+                {
+                    conn.rollback();
+                    conn.close();
+                    return "Problema ao executar o comando SQL de incremento do caixa.";
+                }
+                if (rc == -5)
+                {
+                    conn.rollback();
+                    conn.close();
+                    return "Parâmetros inválidos.";
+                }
             }
 
             conn.commit();
